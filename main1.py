@@ -4,18 +4,18 @@ from github import Github
 import evadb
 
 
-# Import OpenAI GPT-3 API library
+
 import openai
 
-# Define OpenAI API key
+
 openai.api_key = "your_openai_api_key"
 
-# Function to interact with ChatGPT
+
 def chat_with_gpt(prompt):
     response = openai.Completion.create(
         engine="davinci",
         prompt=prompt,
-        max_tokens=50,  # Adjust the max tokens based on your needs
+        max_tokens=50,  
         n = 1  # You can change the number of responses you want
     )
     return response.choices[0].text.strip()
@@ -29,13 +29,13 @@ def print_yellow(text):
 def print_green(text):
     print("\033[92m {}\033[00m".format(text))
 
-# Globals
+
 github_token = "your_github_token"
 organization_name = "your_organization"
 github = Github(github_token)
 organization = github.get_organization(organization_name)
 
-# Database
+
 connection = evadb.connection()
 cursor = connection.cursor()
 cursor.query(''
@@ -47,18 +47,18 @@ cursor.query(''
     )
 '')
 
-# Repositories to update
+
 repositories_to_base = {
     'first_repo': 'master',
     'second_repo': 'develop',
     'third_repo': 'master'
 }
 
-# PR constants
+
 ticket = "ticket_id"
 branch = f"{ticket}-update-cocoapods"
 
-# Database functions
+
 def insert_repository(repository_name, base_branch):
     cursor.query('''
         INSERT INTO repositories (repository_name, base_branch, changes_executed)
@@ -72,17 +72,17 @@ def update_changes_executed(repository_name):
         WHERE repository_name = ?
     ''', (repository_name,))
 
-# Changes to be executed
+
 def execute_changes(repository_name, code_change, code_description):
     print_yellow(f"Making code changes in {repository_name}")
     if not path.exists('Podfile'):
         print_red(f"Repository {repository_name} does not contain Podfile. Skipping...")
         return False
 
-    # Use ChatGPT to generate code modifications
+  
     code_modification = chat_with_gpt(f"Modify the following code:\n{code_change}\nDescription: {code_description}\n")
     
-    # Apply the code modification
+    
     with open('file_to_modify.txt', 'a') as file:
         file.write(code_modification)
 
@@ -92,7 +92,7 @@ def get_commit_title():
     cocoapods_version = os.popen('pod --version').read()
     return f"Update cocoapods to {cocoapods_version}"
 
-# Utility functions
+
 def get_repository(repository_name):
     return organization.get_repo(repository_name)
 
@@ -138,7 +138,7 @@ def create_pr(branch, base_branch):
 
     get_repository(repository_name).create_pull(pr_title, pr_body, base_branch, branch)
 
-    # Logs
+    
     print_green('\n\n\nPR successfully created 🎉')
     print(f'\nPR title: {pr_title}')
     print(f'\nPR body: {pr_body}')
@@ -150,12 +150,12 @@ def cleanup(repository_name):
     os.chdir('..')
     os.system(f'rm -rf {repository_name}')
 
-# Main
+
 for repository_name in repositories_to_base.keys():
     print_yellow(f"\n\n\n************************* Repository: {repository_name} *************************\n\n")
     base_branch = repositories_to_base.get(repository_name)
 
-    # Check if this repository was already processed
+    
     cursor.query('SELECT changes_executed FROM repositories WHERE repository_name = ?', (repository_name,))
     row = cursor.fetchone()
 
@@ -168,7 +168,7 @@ for repository_name in repositories_to_base.keys():
     os.chdir(repository_name)
     prepare_branch(repository_name, base_branch, branch)
 
-    # Example code change and description
+    
     code_change = 'var x = 5;'
     code_description = 'Change the variable value'
     are_changes_executed = execute_changes(repository_name, code_change, code_description)
