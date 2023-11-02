@@ -1,3 +1,5 @@
+![image](https://github.com/AnirudhGatech/sweepai_part1/assets/143911409/2c3b9176-63c2-4f77-8b1c-69920c0566f5)
+
 # Repository Code Change Automation- SWEEP AI Emulation
 
 This Python script automates the process of making code changes in multiple GitHub repositories, creating pull requests for those changes, and managing the execution of these changes in a database. It leverages the power of the OpenAI GPT-3 model for code modification generation.
