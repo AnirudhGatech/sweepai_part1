@@ -1,0 +1,9 @@
+evadb
+numpy
+openai
+pandas
+regex
+requests
+tokenizers
+torch
+torchvision
